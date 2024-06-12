@@ -1,16 +1,14 @@
-﻿namespace CodingEvents;
+﻿namespace CodingEvents.Models;
 
 public class Event
 {
     public string? Name { get; set; }
     public string? Description { get; set; }
+    public string? ContactEmail { get; set; }
     public int Id { get; set; }
-    static private int nextId = 1;
 
     public Event() 
     {
-        Id = nextId;
-        nextId++;
     }
     public Event(string name, string description) : this()
     {

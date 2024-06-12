@@ -1,4 +1,6 @@
-﻿namespace CodingEvents;
+﻿using CodingEvents.Models;
+
+namespace CodingEvents.Data;
 
 public class EventData
 {

@@ -1,15 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using CodingEvents.ViewModels;
+using CodingEvents.Models;
+using CodingEvents.Data;
 namespace CodingEvents.Controllers
 {
     public class EventsController : Controller
     {
+        private EventDbContext context;
+
+        public EventsController (EventDbContext dbcontext)
+        {
+            context = dbcontext;
+        }
         // GET: /<controller>/
            
         public IActionResult Index()
         {
             
-            List<Event> events = new List<Event>(EventData.GetAll());
+            List<Event> events = context.Events.ToList();
             return View(events);
     
         }
@@ -25,20 +33,27 @@ namespace CodingEvents.Controllers
         [HttpPost]
         public IActionResult Add(AddEventViewModel addEventViewModel)
         {
-        Event newEvent = new Event
-        {
-            Name = addEventViewModel.Name,
-            Description = addEventViewModel.Description
-        };
+            if(ModelState.IsValid)
+            {
+                Event newEvent = new Event
+                {
+                    Name = addEventViewModel.Name,
+                    Description = addEventViewModel.Description,
+                    ContactEmail = addEventViewModel.ContactEmail
+                };
 
-        EventData.Add(newEvent);
+                context.Events.Add(newEvent);
+                context.SaveChanges();
 
-        return Redirect("/Events");
+                return Redirect("/Events");
+            }
+
+            return View(addEventViewModel);
         }
 
         public IActionResult Delete()
         {
-            ViewBag.events = EventData.GetAll();
+            ViewBag.events = context.Events.ToList();
 
             return View();
         }
@@ -48,8 +63,10 @@ namespace CodingEvents.Controllers
         {
             foreach (int eventId in eventIds)
             {
-                EventData.Remove(eventId);
+                Event? theEvent = context.Events.Find(eventId);
+                context.Events.Remove(theEvent);
             }
+            context.SaveChanges();
 
             return Redirect("/Events");
         }
