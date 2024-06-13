@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Adding Persistent Database
+var connectionString = builder.Configuration["coding_eventsConnectionString"];
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-//Adding Persistent Database
-var connectionString = "server=localhost;user=codingevents;password=codingevents;database=coding_events";
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
 
 builder.Services.AddDbContext<EventDbContext>(DbContextOptions => DbContextOptions.UseMySql(connectionString, serverVersion));
 
