@@ -15,6 +15,6 @@ public class EventCategory
 
     public EventCategory(string name)
     {
-        Name=name;
+        Name = name;
     }
 }

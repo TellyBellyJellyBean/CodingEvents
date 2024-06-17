@@ -1,36 +1,38 @@
-using Microsoft.AspNetCore.Mvc;
-using CodingEvents.ViewModels;
-using CodingEvents.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CodingEvents.Data;
+using CodingEvents.Models;
+using CodingEvents.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
+// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 namespace CodingEvents.Controllers
 {
     public class EventsController : Controller
     {
         private EventDbContext context;
 
-        public EventsController (EventDbContext dbcontext)
+        public EventsController(EventDbContext dbContext)
         {
-            context = dbcontext;
+            context = dbContext;
         }
+
         // GET: /<controller>/
-           
+        [HttpGet]
         public IActionResult Index()
         {
-            
-            List<Event> events = context.Events.Include(e => e.Category).ToList();
+            List<Event> events = context.Events
+                .Include(e => e.Category)
+                .ToList();
+
             return View(events);
-    
         }
-
-        public IActionResult Detail(int id)
-        {
-            Event theEvent = context.Events.Include(e => e.Category).Single(e => e.Id == id);
-            EventDetailViewModel viewModel = new EventDetailViewModel(theEvent);
-            return View(viewModel);
-        }
-
         [HttpGet]
+
         public IActionResult Add()
         {
             List<EventCategory> categories = context.Categories.ToList();
@@ -40,9 +42,10 @@ namespace CodingEvents.Controllers
         }
 
         [HttpPost]
+        [Route("/Events/Add")]
         public IActionResult Add(AddEventViewModel addEventViewModel)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 EventCategory theCategory = context.Categories.Find(addEventViewModel.CategoryId);
                 Event newEvent = new Event
@@ -62,6 +65,7 @@ namespace CodingEvents.Controllers
             return View(addEventViewModel);
         }
 
+        [HttpGet]
         public IActionResult Delete()
         {
             ViewBag.events = context.Events.ToList();
@@ -74,13 +78,27 @@ namespace CodingEvents.Controllers
         {
             foreach (int eventId in eventIds)
             {
-                Event? theEvent = context.Events.Find(eventId);
+                Event theEvent = context.Events.Find(eventId);
                 context.Events.Remove(theEvent);
             }
+
             context.SaveChanges();
 
             return Redirect("/Events");
         }
-    }
 
+        [HttpGet]
+
+        public IActionResult Detail(int id)
+        {
+            Event theEvent = context.Events.Include(e => e.Category).Include(e => e.Tags).SingleOrDefault(e => e.Id == id);
+
+            if (theEvent == null)
+            {
+                return NotFound();
+            }
+            EventDetailViewModel viewModel = new EventDetailViewModel(theEvent);
+            return View(viewModel);
+        }
+    }
 }

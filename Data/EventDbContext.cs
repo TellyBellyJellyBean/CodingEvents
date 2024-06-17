@@ -1,21 +1,32 @@
 ﻿using System;
 using CodingEvents.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-namespace CodingEvents.Data;
+using Microsoft.Extensions.Hosting;
 
-
-
-public class EventDbContext : DbContext
+namespace CodingEvents.Data
 {
-
-    
-    public DbSet<Event> Events { get; set; }
-    public DbSet<EventCategory> Categories { get; set; }
-
-
-    public EventDbContext(DbContextOptions<EventDbContext> options) : base(options)
+    public class EventDbContext : DbContext
     {
+        public DbSet<Event> Events { get; set; }
 
+        public DbSet<EventCategory> Categories { get; set; }
+
+        public DbSet<Tag> Tags { get; set; }
+
+        public EventDbContext(DbContextOptions<EventDbContext> options) : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Event>()
+                .HasOne(c => c.Category)
+                .WithMany(e => e.Events);
+
+            modelBuilder.Entity<Event>()
+                .HasMany(e => e.Tags)
+                .WithMany(e => e.Events)
+                .UsingEntity(j => j.ToTable("EventTags"));
+        }
     }
 }

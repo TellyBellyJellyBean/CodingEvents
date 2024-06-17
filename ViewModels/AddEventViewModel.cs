@@ -17,7 +17,9 @@ namespace CodingEvents.ViewModels
     public string? ContactEmail { get; set; }
 
     public int CategoryId { get; set; }
+    public int TagId { get; set; }
     public List<SelectListItem>? Categories { get; set; }
+    public List<SelectListItem>? Tags { get; set; }
 
     public AddEventViewModel(List<EventCategory> categories)
     {
@@ -29,6 +31,19 @@ namespace CodingEvents.ViewModels
             {
                Value = category.Id.ToString(),
                Text = category.Name
+            });
+         }
+    }
+    public AddEventViewModel(List<Tag> tags)
+    {
+         Tags = new List<SelectListItem>();
+
+         foreach (var tag in tags)
+         {
+            Tags.Add(new SelectListItem
+            {
+               Value = tag.Id.ToString(),
+               Text = tag.Name
             });
          }
     }

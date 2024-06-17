@@ -1,4 +1,5 @@
-﻿namespace CodingEvents.Models;
+﻿using System;
+namespace CodingEvents.Models;
 
 public class Event
 {
@@ -9,14 +10,17 @@ public class Event
     public int CategoryId { get; set; }
     public int Id { get; set; }
 
+    public ICollection<Tag>? Tags { get; set; }
+
     public Event() 
     {
     }
-    public Event(string name, string description, string contactEmail) : this()
+    public Event(string name, string description, string contactEmail)
     {
         Name = name;
         Description = description;
         ContactEmail = contactEmail;
+        Tags = new List<Tag>();
 
     }
 
