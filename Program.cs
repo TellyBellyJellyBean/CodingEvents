@@ -1,4 +1,5 @@
 using CodingEvents.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,18 @@ var connectionString = builder.Configuration["coding_eventsConnectionString"];
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
 
 // Add services to the container.
+builder.Services.AddRazorPages();
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 10;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = false;
+}).AddEntityFrameworkStores<EventDbContext>();
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<EventDbContext>(DbContextOptions => DbContextOptions.UseMySql(connectionString, serverVersion));
@@ -28,6 +41,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapRazorPages();
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",

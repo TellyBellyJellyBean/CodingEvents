@@ -7,11 +7,13 @@ using CodingEvents.Models;
 using CodingEvents.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace CodingEvents.Controllers
 {
+    [Authorize]
     public class EventsController : Controller
     {
         private EventDbContext context;
@@ -22,6 +24,7 @@ namespace CodingEvents.Controllers
         }
 
         // GET: /<controller>/
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Index()
         {
